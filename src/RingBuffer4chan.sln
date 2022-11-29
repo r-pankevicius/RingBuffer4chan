@@ -5,7 +5,9 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RingBuffer4chan", "RingBuffer4chan\RingBuffer4chan.csproj", "{F61614D0-A581-4544-A49A-E29A7A8C7011}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RingBuffer4chan.Tests", "RingBuffer4chan.Tests\RingBuffer4chan.Tests.csproj", "{367E19A3-1C4D-442D-B1A6-2E54A9B5F4AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RingBuffer4chan.Tests", "RingBuffer4chan.Tests\RingBuffer4chan.Tests.csproj", "{367E19A3-1C4D-442D-B1A6-2E54A9B5F4AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeathMatchConsoleApp", "DeathMatchConsoleApp\DeathMatchConsoleApp.csproj", "{3E0149C4-48BF-4D61-87FA-EB54DF44470B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{367E19A3-1C4D-442D-B1A6-2E54A9B5F4AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{367E19A3-1C4D-442D-B1A6-2E54A9B5F4AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{367E19A3-1C4D-442D-B1A6-2E54A9B5F4AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E0149C4-48BF-4D61-87FA-EB54DF44470B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E0149C4-48BF-4D61-87FA-EB54DF44470B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E0149C4-48BF-4D61-87FA-EB54DF44470B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E0149C4-48BF-4D61-87FA-EB54DF44470B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
