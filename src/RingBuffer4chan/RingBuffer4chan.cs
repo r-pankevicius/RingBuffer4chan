@@ -61,7 +61,13 @@ namespace RingBuffer4chan
 		/// When <see cref="ReadIndex"/> == <see cref="WriteIndex"/> the buffer is empty.
 		/// </para>
 		/// </summary>
-		internal int WriteIndex { get; private set; }
+		internal int WriteIndex
+		{
+			get;
+			// A place to catch a nasty bug by setting a breakpoint with the condition:
+			// value > Capacity * 2
+			private set;
+		}
 
 		/// <summary>Maximum buffer capacity.</summary>
 		public int Capacity { get; private set; }
@@ -71,24 +77,21 @@ namespace RingBuffer4chan
 
 		public void CheckIn(T item)
 		{
-			if (Size >= Capacity)
+			if (WriteIndex >= _buffer.Length)
 			{
-				if (WriteIndex >= _buffer.Length)
-				{
-					// Move all block without first item to the buffer start
-					int size = Size;
-					var bufferSpan = _buffer.AsSpan();
-					bufferSpan[(ReadIndex + 1)..].CopyTo(bufferSpan[0..(size - 1)]);
-					ReadIndex = 0;
-					_buffer[size - 1] = item;
-					WriteIndex = size;
-					return;
-				}
-				else
-				{
-					// Drop the first item
-					ReadIndex++;
-				}
+				// Move all block without first item to the buffer start
+				int size = Size;
+				var bufferSpan = _buffer.AsSpan();
+				bufferSpan[(ReadIndex + 1)..].CopyTo(bufferSpan[0..(size - 1)]);
+				ReadIndex = 0;
+				_buffer[size - 1] = item;
+				WriteIndex = size;
+				return;
+			}
+			else if (Size >= Capacity)
+			{
+				// Drop the first item because contents won't fit
+				ReadIndex++;
 			}
 
 			_buffer[WriteIndex++] = item;

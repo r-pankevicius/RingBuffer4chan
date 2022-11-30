@@ -1,4 +1,6 @@
 ﻿using FluentAssertions;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace RingBuffer4chan
@@ -83,7 +85,7 @@ namespace RingBuffer4chan
 			RingBuffer<int> ringBuffer = new(capacity: 2);
 			ringBuffer.Capacity.Should().Be(2);
 			ringBuffer.Size.Should().Be(0);
-			
+
 			ringBuffer.CheckIn(1);
 			ringBuffer.Capacity.Should().Be(2);
 			ringBuffer.Size.Should().Be(1);
@@ -91,11 +93,11 @@ namespace RingBuffer4chan
 			ringBuffer.CheckIn(2);
 			ringBuffer.Capacity.Should().Be(2);
 			ringBuffer.Size.Should().Be(2);
-			
+
 			ringBuffer.CheckIn(3);
 			ringBuffer.Capacity.Should().Be(2);
 			ringBuffer.Size.Should().Be(2);
-			
+
 			ringBuffer.CheckIn(4);
 			ringBuffer.Capacity.Should().Be(2);
 			ringBuffer.Size.Should().Be(2);
@@ -128,6 +130,57 @@ namespace RingBuffer4chan
 
 			ringBuffer.SniffFirst().Should().Be(5);
 			ringBuffer.SniffLast().Should().Be(6);
+		}
+
+		[Fact]
+		public void RandomTestWithWithCheckInMultipleCheckOutMultiple()
+		{
+			RingBuffer<int> _ringBuffer = new(128);
+
+			int howMany = 10, twoThirds = howMany * 2 / 3;
+			int[] numbersToAdd = Enumerable.Range(0, howMany).
+				Select((v, i) => v).ToArray();
+
+			for (int loopIdx = 0; loopIdx < 100; loopIdx++)
+			{
+				var numbersSpan = numbersToAdd.AsSpan();
+
+				_ringBuffer.CheckInMultiple(numbersSpan[0..howMany]);
+				_ = _ringBuffer.CheckOutMultiple(twoThirds);
+			}
+		}
+
+		[Fact]
+		public void SomeTest1()
+		{
+			RingBuffer<char> _ringBuffer = new(3, "ABC");
+			_ringBuffer.CheckIn('D');
+		}
+
+		[Fact]
+		public void SomeTest2()
+		{
+			RingBuffer<char> _ringBuffer = new(3, "ABC");
+			_ = _ringBuffer.CheckOut();
+			_ringBuffer.CheckIn('D');
+			_ringBuffer.CheckIn('E');
+		}
+
+		[Fact]
+		public void SomeTest3()
+		{
+			RingBuffer<char> _ringBuffer = new(3, "ABC");
+			_ = _ringBuffer.CheckOutMultiple(2);
+			_ringBuffer.CheckIn('D');
+			_ringBuffer.CheckIn('E');
+		}
+
+		[Fact]
+		public void SomeTest4()
+		{
+			RingBuffer<char> _ringBuffer = new(3, "ABC");
+			_ = _ringBuffer.CheckOutMultiple(2);
+			_ringBuffer.CheckInMultiple("DEF");
 		}
 	}
 }
