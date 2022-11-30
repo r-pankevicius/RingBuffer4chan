@@ -2,7 +2,6 @@
 using BenchmarkDotNet.Running;
 using CircularBuffer;
 using RingBuffer4chan;
-using System;
 
 namespace DeathMatchConsoleApp
 {
@@ -10,14 +9,15 @@ namespace DeathMatchConsoleApp
 	{
 		static void Main(string[] args)
 		{
-			BenchmarkRunner.Run<Benchmarks.JustAdd>();
+			BenchmarkRunner.Run<Benchmarks.AddOne>();
+			BenchmarkRunner.Run<Benchmarks.AddMultiple>();
 		}
 	}
 
 	[MemoryDiagnoser]
 	public static class Benchmarks
 	{
-		public class JustAdd
+		public class AddOne
 		{
 			readonly CircularBuffer<int> _circularBuffer = new(128);
 			readonly RingBuffer<int> _ringBuffer = new(128);
@@ -35,6 +35,37 @@ namespace DeathMatchConsoleApp
 			public void WithRingBuffer()
 			{
 				_ringBuffer.CheckIn(10);
+			}
+		}
+
+		public class AddMultiple
+		{
+			readonly static int[] NumbersToAdd =
+				Enumerable.Range(0, 1000)
+					.Select((v, i) => v + i).ToArray();
+
+			readonly CircularBuffer<int> _circularBuffer = new(128);
+			readonly RingBuffer<int> _ringBuffer = new(128);
+
+			[Params(10, 50, 100)]
+			public int HowMany { get; set; }
+
+			[Benchmark(Baseline = true)]
+			public void WithCircularBuffer()
+			{
+				var numbersSpan = NumbersToAdd.AsSpan();
+
+				for (int idx = 0; idx < HowMany; idx++)
+				{
+					_circularBuffer.PushBack(numbersSpan[idx]);
+				}
+			}
+
+			[Benchmark]
+			public void WithRingBuffer()
+			{
+				var numbersSpan = NumbersToAdd.AsSpan();
+				_ringBuffer.CheckInMultiple(numbersSpan[0..HowMany]);
 			}
 		}
 	}
