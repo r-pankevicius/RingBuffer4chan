@@ -155,9 +155,16 @@ namespace RingBuffer4chan
 			_ringBuffer.Size.Should().Be(2);
 			_ringBuffer.ReadIndex.Should().Be(0);
 			_ringBuffer.WriteIndex.Should().Be(2);
+			_ringBuffer.SniffFirst().Should().Be(1);
+			_ringBuffer.SniffLast().Should().Be(2);
 
 			_ringBuffer.CheckInMultiple(new int[] { 3, 4, 5 });
+			_ringBuffer.SniffFirst().Should().Be(3);
+			_ringBuffer.SniffLast().Should().Be(5);
+
 			_ = _ringBuffer.CheckOutMultiple(2);
+			_ringBuffer.SniffFirst().Should().Be(5);
+			_ringBuffer.SniffLast().Should().Be(5);
 
 			_ringBuffer.Size.Should().Be(1);
 			_ringBuffer.ReadIndex.Should().Be(4);

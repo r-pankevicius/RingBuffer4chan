@@ -121,11 +121,12 @@ namespace RingBuffer4chan
 		{
 #if true
 			int itemsLength = items.Length;
+			var bufferSpan = _buffer.AsSpan();
 
-			if (ReadIndex + itemsLength < _buffer.Length)
+			if (ReadIndex + itemsLength < bufferSpan.Length)
 			{
 				// Enough buffer place to copy all items to the end
-				items.CopyTo(_buffer);
+				items.CopyTo(bufferSpan[WriteIndex..]);
 				WriteIndex += itemsLength;
 				if (Size > Capacity)
 				{
@@ -135,25 +136,23 @@ namespace RingBuffer4chan
 			}
 			else
 			{
-				int previousReadIndex = ReadIndex;
-				ReadIndex = 0;
-
 				// Need to move buffer to the start
 				if (itemsLength >= Capacity)
 				{
 					// New items will overwrite all old ones
-					items[(itemsLength - Capacity)..].CopyTo(_buffer);
+					items[(itemsLength - Capacity)..].CopyTo(bufferSpan);
+					ReadIndex = 0;
 					WriteIndex = Capacity;
 				}
 				else
 				{
-					throw new NotImplementedException();
-
+					var remainsInBuffer = bufferSpan[ReadIndex..WriteIndex];
+					remainsInBuffer.CopyTo(bufferSpan);
+					items.CopyTo(bufferSpan[remainsInBuffer.Length..]);
+					ReadIndex = 0;
+					WriteIndex = remainsInBuffer.Length + itemsLength;
 				}
-				//else
-				;
 			}
-
 
 #else
 			// Very inefficient, but it will allow to start with unit tests
