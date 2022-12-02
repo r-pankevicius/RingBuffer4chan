@@ -182,5 +182,19 @@ namespace RingBuffer4chan
 			_ = _ringBuffer.CheckOutMultiple(2);
 			_ringBuffer.CheckInMultiple("DEF");
 		}
+
+		[Fact]
+		public void AddOneTakeOneResetsBufferWhenCapacityX2Reached()
+		{
+			const int capacity = 3;
+			RingBuffer<int> _ringBuffer = new(capacity);
+
+			for (int i = 0; i < capacity * 10; i++)
+			{
+				_ringBuffer.CheckIn(i);
+				int value = _ringBuffer.CheckOut();
+				value.Should().Be(i);
+			}
+		}
 	}
 }

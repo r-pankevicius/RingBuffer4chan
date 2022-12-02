@@ -1,4 +1,6 @@
-﻿using System;
+﻿// #define DUMP_STATE_ON_EXCEPTION
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +51,11 @@ namespace RingBuffer4chan
 		}
 
 		/// <summary>Read index is where the buffer contents start.</summary>
-		internal int ReadIndex { get; private set; }
+		internal int ReadIndex
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// Write index is where the buffer contents end.
@@ -77,24 +83,38 @@ namespace RingBuffer4chan
 
 		public void CheckIn(T item)
 		{
-			if (WriteIndex >= _buffer.Length)
+#if DUMP_STATE_ON_EXCEPTION
+			try
+#endif
 			{
-				// Move all block without first item to the buffer start
-				int size = Size;
-				var bufferSpan = _buffer.AsSpan();
-				bufferSpan[(ReadIndex + 1)..].CopyTo(bufferSpan[0..(size - 1)]);
-				ReadIndex = 0;
-				_buffer[size - 1] = item;
-				WriteIndex = size;
-				return;
-			}
-			else if (Size >= Capacity)
-			{
-				// Drop the first item because contents won't fit
-				ReadIndex++;
-			}
+				if (WriteIndex >= _buffer.Length)
+				{
+					// Move all block without first item to the buffer start
+					int size = Size;
+					var bufferSpan = _buffer.AsSpan();
+					var sourceBuffer = bufferSpan[(ReadIndex + 1)..];
+					var targetBuffer = bufferSpan[0..(size - 1)];
+					sourceBuffer.CopyTo(targetBuffer);
+					ReadIndex = 0;
+					_buffer[size - 1] = item;
+					WriteIndex = size;
+					return;
+				}
+				else if (Size >= Capacity)
+				{
+					// Drop the first item because contents won't fit
+					ReadIndex++;
+				}
 
-			_buffer[WriteIndex++] = item;
+				_buffer[WriteIndex++] = item;
+			}
+#if DUMP_STATE_ON_EXCEPTION
+			catch
+			{
+				DumpInternalState();
+				throw;
+			}
+#endif
 		}
 
 		public void CheckInMultiple(ReadOnlySpan<T> items)
@@ -155,7 +175,13 @@ namespace RingBuffer4chan
 			if (Size == 0)
 				throw new InvalidOperationException("Buffer is empty.");
 
-			return _buffer[ReadIndex++];
+			T result = _buffer[ReadIndex++];
+			if (ReadIndex == _buffer.Length)
+			{
+				ReadIndex = WriteIndex = 0;
+			}
+
+			return result;
 		}
 
 		public T[] CheckOutMultiple(int numberOfItems)
@@ -168,7 +194,7 @@ namespace RingBuffer4chan
 		public void Clear() =>
 			ReadIndex = WriteIndex = 0;
 
-		#region IEnumerable<T> implementation
+#region IEnumerable<T> implementation
 
 		public IEnumerator<T> GetEnumerator()
 		{
@@ -182,6 +208,21 @@ namespace RingBuffer4chan
 			return array.GetEnumerator();
 		}
 
-		#endregion
+#endregion
+
+#if DUMP_STATE_ON_EXCEPTION
+		private void DumpInternalState()
+		{
+			string separatorLine = new string('-', 80);
+
+			Console.WriteLine(separatorLine);
+
+			Console.WriteLine($"{GetType().Name}.{nameof(Capacity)} = {Capacity}");
+			Console.WriteLine($"{GetType().Name}.{nameof(ReadIndex)} = {ReadIndex}");
+			Console.WriteLine($"{GetType().Name}.{nameof(WriteIndex)} = {WriteIndex}");
+
+			Console.WriteLine(separatorLine);
+		}
+#endif
 	}
 }

@@ -9,10 +9,24 @@ namespace DeathMatchConsoleApp
 	{
 		static void Main(string[] args)
 		{
-			BenchmarkRunner.Run<Benchmarks.AddOne>();
-			BenchmarkRunner.Run<Benchmarks.AddOneTakeOne>();
-			BenchmarkRunner.Run<Benchmarks.AddMultiple>();
-			BenchmarkRunner.Run<Benchmarks.AddMultipleTakeMultiple>();
+			if (args.Length == 1 && args[0] == "justrun")
+			{
+				// Pass `justrun` as arg to avoid benchmarks
+				// and debug exception got by running them
+				var addOne = new Benchmarks.AddOne();
+				foreach (int times in new int[] { 10, 100, 1000 })
+				{
+					addOne.Times = times;
+					addOne.WithRingBuffer();
+				}
+			}
+			else
+			{
+				BenchmarkRunner.Run<Benchmarks.AddOne>();
+				BenchmarkRunner.Run<Benchmarks.AddOneTakeOne>();
+				BenchmarkRunner.Run<Benchmarks.AddMultiple>();
+				BenchmarkRunner.Run<Benchmarks.AddMultipleTakeMultiple>();
+			}
 		}
 	}
 
