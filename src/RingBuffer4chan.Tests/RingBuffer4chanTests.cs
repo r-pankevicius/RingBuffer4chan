@@ -174,13 +174,23 @@ namespace RingBuffer4chan
 		}
 
 		[Fact]
+		public void TrickyOne_AnInstanceOfTheNextRandom()
+		{
+			var initialState = new RingBuffer<int>.InternalState(
+				readIndex: 150, writeIndex: 250);
+			RingBuffer<int> _ringBuffer = new(128, initialState);
+
+			int[] numbersToAdd = Enumerable.Range(0, 10).ToArray();
+			_ringBuffer.CheckInMultiple(numbersToAdd);
+		}
+
+		[Fact]
 		public void RandomTestWithWithCheckInMultipleCheckOutMultiple()
 		{
 			RingBuffer<int> _ringBuffer = new(128);
 
 			int howMany = 10, twoThirds = howMany * 2 / 3;
-			int[] numbersToAdd = Enumerable.Range(0, howMany).
-				Select((v, i) => v).ToArray();
+			int[] numbersToAdd = Enumerable.Range(0, howMany).ToArray();
 
 			for (int loopIdx = 0; loopIdx < 100; loopIdx++)
 			{

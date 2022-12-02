@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace RingBuffer4chan
 {
@@ -50,7 +51,27 @@ namespace RingBuffer4chan
 			WriteIndex = itemsArray.Length;
 		}
 
+		/// <summary>
+		/// internal for unit tests.
+		/// </summary>
+		internal RingBuffer(int capacity, InternalState initialState) : this(capacity)
+		{
+			ReadIndex = initialState.ReadIndex;
+			WriteIndex = initialState.WriteIndex;
+		}
+
+		/// <summary>
+		/// internal for unit tests.
+		/// </summary>
+		internal RingBuffer(int capacity, IEnumerable<T> items, InternalState initialState) :
+			this(capacity, items)
+		{
+			ReadIndex = initialState.ReadIndex;
+			WriteIndex = initialState.WriteIndex;
+		}
+
 		/// <summary>Read index is where the buffer contents start.</summary>
+		/// <remarks>internal getter for unit tests, should be replaced with GetInternalStateSnapshot()</remarks>
 		internal int ReadIndex
 		{
 			get;
@@ -67,6 +88,7 @@ namespace RingBuffer4chan
 		/// When <see cref="ReadIndex"/> == <see cref="WriteIndex"/> the buffer is empty.
 		/// </para>
 		/// </summary>
+		/// <remarks>internal getter for unit tests, should be replaced with GetInternalStateSnapshot()</remarks>
 		internal int WriteIndex
 		{
 			get;
@@ -231,7 +253,7 @@ namespace RingBuffer4chan
 		public void Clear() =>
 			ReadIndex = WriteIndex = 0;
 
-#region IEnumerable<T> implementation
+		#region IEnumerable<T> implementation
 
 		public IEnumerator<T> GetEnumerator()
 		{
@@ -245,7 +267,7 @@ namespace RingBuffer4chan
 			return array.GetEnumerator();
 		}
 
-#endregion
+		#endregion
 
 #if DUMP_STATE_ON_EXCEPTION
 		private void DumpInternalState()
@@ -261,5 +283,18 @@ namespace RingBuffer4chan
 			Console.WriteLine(separatorLine);
 		}
 #endif
+
+		internal readonly struct InternalState
+		{
+			public InternalState(int readIndex, int writeIndex)
+			{
+				ReadIndex = readIndex;
+				WriteIndex = writeIndex;
+			}
+			
+			public int ReadIndex { get; }
+			
+			public int WriteIndex { get; }
+		}
 	}
 }
