@@ -133,6 +133,40 @@ namespace RingBuffer4chan
 		}
 
 		[Fact]
+		public void AddOneTakeOneResetsBufferWhenCapacityX2Reached()
+		{
+			const int capacity = 3;
+			RingBuffer<int> _ringBuffer = new(capacity);
+
+			for (int i = 0; i < capacity * 10; i++)
+			{
+				_ringBuffer.CheckIn(i);
+				int value = _ringBuffer.CheckOut();
+				value.Should().Be(i);
+			}
+		}
+
+		[Fact]
+		public void CheckinMultipleWhenBufferSizeWillBeReached()
+		{
+			const int capacity = 3; // buffers size will be 6
+			RingBuffer<int> _ringBuffer = new(capacity, new int[] { 1, 2 });
+
+			_ringBuffer.Size.Should().Be(2);
+			_ringBuffer.ReadIndex.Should().Be(0);
+			_ringBuffer.WriteIndex.Should().Be(2);
+
+			_ringBuffer.CheckInMultiple(new int[] { 3, 4, 5 });
+			_ = _ringBuffer.CheckOutMultiple(2);
+
+			_ringBuffer.Size.Should().Be(1);
+			_ringBuffer.ReadIndex.Should().Be(4);
+			_ringBuffer.WriteIndex.Should().Be(5);
+
+			_ringBuffer.CheckInMultiple(new int[] { 6, 7 });
+		}
+
+		[Fact]
 		public void RandomTestWithWithCheckInMultipleCheckOutMultiple()
 		{
 			RingBuffer<int> _ringBuffer = new(128);
@@ -181,20 +215,6 @@ namespace RingBuffer4chan
 			RingBuffer<char> _ringBuffer = new(3, "ABC");
 			_ = _ringBuffer.CheckOutMultiple(2);
 			_ringBuffer.CheckInMultiple("DEF");
-		}
-
-		[Fact]
-		public void AddOneTakeOneResetsBufferWhenCapacityX2Reached()
-		{
-			const int capacity = 3;
-			RingBuffer<int> _ringBuffer = new(capacity);
-
-			for (int i = 0; i < capacity * 10; i++)
-			{
-				_ringBuffer.CheckIn(i);
-				int value = _ringBuffer.CheckOut();
-				value.Should().Be(i);
-			}
 		}
 	}
 }

@@ -119,9 +119,47 @@ namespace RingBuffer4chan
 
 		public void CheckInMultiple(ReadOnlySpan<T> items)
 		{
+#if true
+			int itemsLength = items.Length;
+
+			if (ReadIndex + itemsLength < _buffer.Length)
+			{
+				// Enough buffer place to copy all items to the end
+				items.CopyTo(_buffer);
+				WriteIndex += itemsLength;
+				if (Size > Capacity)
+				{
+					// Need to push read index forward removing some older items
+					ReadIndex = WriteIndex - Capacity;
+				}
+			}
+			else
+			{
+				int previousReadIndex = ReadIndex;
+				ReadIndex = 0;
+
+				// Need to move buffer to the start
+				if (itemsLength >= Capacity)
+				{
+					// New items will overwrite all old ones
+					items[(itemsLength - Capacity)..].CopyTo(_buffer);
+					WriteIndex = Capacity;
+				}
+				else
+				{
+					throw new NotImplementedException();
+
+				}
+				//else
+				;
+			}
+
+
+#else
 			// Very inefficient, but it will allow to start with unit tests
 			foreach (T item in items)
 				CheckIn(item);
+#endif
 		}
 
 		public T SniffFirst()
