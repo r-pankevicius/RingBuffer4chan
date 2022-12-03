@@ -180,6 +180,17 @@ namespace RingBuffer4chan
 				readIndex: 150, writeIndex: 250);
 			RingBuffer<int> _ringBuffer = new(128, initialState);
 
+			// this
+			//{RingBuffer4chan.RingBuffer<int>}
+			//    Capacity: 128
+			//    ReadIndex: 150
+			//     Size: 100
+			//     WriteIndex: 250
+			_ringBuffer.Capacity.Should().Be(128);
+			_ringBuffer.ReadIndex.Should().Be(150);
+			_ringBuffer.Size.Should().Be(100);
+			_ringBuffer.WriteIndex.Should().Be(250);
+
 			int[] numbersToAdd = Enumerable.Range(0, 10).ToArray();
 			_ringBuffer.CheckInMultiple(numbersToAdd);
 		}
