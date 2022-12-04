@@ -1,7 +1,6 @@
-﻿# 2022-12-04 at @6c232032
+﻿# 2022-12-04 at @[6c232032](https://github.com/r-pankevicius/RingBuffer4chan/commit/6c23203212ab86bc37b80e12d3a644ed3d58bd24)
 
 ## AddOne
-```
 |             Method | Times |     Mean |     Error |    StdDev | Ratio | RatioSD |
 |------------------- |------ |---------:|----------:|----------:|------:|--------:|
 | **WithCircularBuffer** |    **10** | **1.524 ns** | **0.0215 ns** | **0.0191 ns** |  **1.00** |    **0.00** |
@@ -12,10 +11,8 @@
 |                    |       |          |           |           |       |         |
 | **WithCircularBuffer** |  **1000** | **1.828 ns** | **0.0068 ns** | **0.0064 ns** |  **1.00** |    **0.00** |
 |     WithRingBuffer |  1000 | 2.412 ns | 0.0027 ns | 0.0024 ns |  1.32 |    0.01 |
-```
 
 ## AddOneTakeOne
-```
 |             Method | Times |     Mean |     Error |    StdDev | Ratio | RatioSD |
 |------------------- |------ |---------:|----------:|----------:|------:|--------:|
 | **WithCircularBuffer** |    **10** | **2.389 ns** | **0.0162 ns** | **0.0135 ns** |  **1.00** |    **0.00** |
@@ -26,10 +23,8 @@
 |                    |       |          |           |           |       |         |
 | **WithCircularBuffer** |  **1000** | **2.632 ns** | **0.0403 ns** | **0.0377 ns** |  **1.00** |    **0.00** |
 |     WithRingBuffer |  1000 | 4.505 ns | 0.0216 ns | 0.0202 ns |  1.71 |    0.03 |```
-```
 
 ## AddMultiple
-```
 |             Method | HowMany |       Mean |     Error |    StdDev | Ratio |
 |------------------- |-------- |-----------:|----------:|----------:|------:|
 | **WithCircularBuffer** |      **10** |  **18.192 ns** | **0.1288 ns** | **0.1205 ns** |  **1.00** |
@@ -40,10 +35,8 @@
 |                    |         |            |           |           |       |
 | **WithCircularBuffer** |     **100** | **197.052 ns** | **3.9391 ns** | **4.9816 ns** |  **1.00** |
 |     WithRingBuffer |     100 |  11.528 ns | 0.0554 ns | 0.0518 ns |  0.06 |
-```
 
 ## AddMultipleTakeMultiple
-```
 |             Method | HowMany |      Mean |    Error |   StdDev | Ratio |
 |------------------- |-------- |----------:|---------:|---------:|------:|
 | **WithCircularBuffer** |      **10** |  **30.72 ns** | **0.287 ns** | **0.254 ns** |  **1.00** |
@@ -54,4 +47,3 @@
 |                    |         |           |          |          |       |
 | **WithCircularBuffer** |     **100** | **300.15 ns** | **2.564 ns** | **2.399 ns** |  **1.00** |
 |     WithRingBuffer |     100 |  32.18 ns | 0.337 ns | 0.315 ns |  0.11 |
-```
