@@ -9,16 +9,11 @@ namespace DeathMatchConsoleApp
 	{
 		static void Main(string[] args)
 		{
-			if (args.Length == 1 && args[0] == "justrun")
+			if (args.Length >= 1 && args[0] == "justrun")
 			{
 				// Pass `justrun` as arg to avoid benchmarks
 				// and debug exception got by running them
-				var addOne = new Benchmarks.AddOne();
-				foreach (int times in new int[] { 10, 100, 1000 })
-				{
-					addOne.Times = times;
-					addOne.WithRingBuffer();
-				}
+				JustRun();
 			}
 			else
 			{
@@ -26,6 +21,42 @@ namespace DeathMatchConsoleApp
 				BenchmarkRunner.Run<Benchmarks.AddOneTakeOne>();
 				BenchmarkRunner.Run<Benchmarks.AddMultiple>();
 				BenchmarkRunner.Run<Benchmarks.AddMultipleTakeMultiple>();
+			}
+		}
+
+		private static void JustRun()
+		{
+			static TimeSpan RunWithTimeMeasurement(Action runBenchmark, int times, string benchmarkDescription)
+			{
+				Console.WriteLine($"Running benchmark {times} times: {benchmarkDescription}");
+				
+				var start = DateTime.Now;
+				runBenchmark();
+				var took = DateTime.Now - start;
+
+				Console.WriteLine($"Took {took}");
+				return took;
+			}
+
+			{
+				var benchmark = new Benchmarks.AddOne();
+				benchmark.Times = 100;
+				int timesToRun = 1_000_000;
+				var tookCB = RunWithTimeMeasurement(() => benchmark.WithCircularBuffer(), timesToRun,
+					$"{benchmark.GetType().Name}.{nameof(benchmark.WithCircularBuffer)} with {nameof(benchmark.Times)}={benchmark.Times}");
+				var tookRB = RunWithTimeMeasurement(() => benchmark.WithRingBuffer(), timesToRun,
+					$"{benchmark.GetType().Name}.{nameof(benchmark.WithRingBuffer)} with {nameof(benchmark.Times)}={benchmark.Times}");
+
+				double tookCBBenchmark = tookCB.Ticks;
+				double tookRBBenchmark = tookRB.Ticks;
+				if (tookCBBenchmark <= tookRBBenchmark)
+				{
+					Console.WriteLine($"RingBuffer was {(tookRBBenchmark - tookCBBenchmark) / tookCBBenchmark} times slower.");
+				}
+				else
+				{
+					Console.WriteLine($"RingBuffer was {(tookCBBenchmark - tookRBBenchmark) / tookRBBenchmark} times faster.");
+				}
 			}
 		}
 	}
