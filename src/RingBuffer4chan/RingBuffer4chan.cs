@@ -1,5 +1,5 @@
-﻿// #define DUMP_STATE_ON_EXCEPTION
-#define CHECKINMULTIPLE_ONE_BY_ONE
+﻿//#define DUMP_STATE_ON_EXCEPTION
+//#define CHECKINMULTIPLE_ONE_BY_ONE
 
 using System;
 using System.Collections;
@@ -145,7 +145,7 @@ namespace RingBuffer4chan
 			int itemsLength = items.Length;
 			var bufferSpan = _buffer.AsSpan();
 
-			if (ReadIndex + itemsLength < bufferSpan.Length)
+			if (WriteIndex + itemsLength < bufferSpan.Length)
 			{
 				// Enough buffer place to copy all items to the end
 				items.CopyTo(bufferSpan[WriteIndex..]);

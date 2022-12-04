@@ -174,7 +174,7 @@ namespace RingBuffer4chan
 		}
 
 		[Fact]
-		public void TrickyOne_AnInstanceOfTheNextRandom()
+		public void CheckInMultipleWhenBufferResetTo0IsNeeded()
 		{
 			var initialState = new RingBuffer<int>.InternalState(
 				readIndex: 150, writeIndex: 250);
@@ -193,6 +193,11 @@ namespace RingBuffer4chan
 
 			int[] numbersToAdd = Enumerable.Range(0, 10).ToArray();
 			_ringBuffer.CheckInMultiple(numbersToAdd);
+
+			_ringBuffer.Capacity.Should().Be(128);
+			_ringBuffer.ReadIndex.Should().Be(0);
+			_ringBuffer.Size.Should().Be(110);
+			_ringBuffer.WriteIndex.Should().Be(110);
 		}
 
 		[Fact]
