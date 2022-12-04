@@ -142,14 +142,14 @@ namespace RingBuffer4chan
 		public void CheckInMultiple(ReadOnlySpan<T> items)
 		{
 #if !CHECKINMULTIPLE_ONE_BY_ONE
-			int itemsLength = items.Length;
+			int newItemsLength = items.Length;
 			var bufferSpan = _buffer.AsSpan();
 
-			if (WriteIndex + itemsLength < bufferSpan.Length)
+			if (WriteIndex + newItemsLength < bufferSpan.Length)
 			{
 				// Enough buffer place to copy all items to the end
 				items.CopyTo(bufferSpan[WriteIndex..]);
-				WriteIndex += itemsLength;
+				WriteIndex += newItemsLength;
 				if (Size > Capacity)
 				{
 					// Need to push read index forward removing some older items
@@ -159,10 +159,21 @@ namespace RingBuffer4chan
 			else
 			{
 				// Need to move buffer to the start
-				if (itemsLength >= Capacity)
+				int newSize = Size + newItemsLength;
+				if (newSize > Capacity)
 				{
-					// New items will overwrite all old ones
-					items[(itemsLength - Capacity)..].CopyTo(bufferSpan);
+					// Some or all of old items will be overwriten
+					if (newItemsLength >= Capacity)
+					{
+						// All old items will be overwritten
+						items[(newItemsLength - Capacity)..].CopyTo(bufferSpan);
+					}
+					else
+					{
+						// Only some of old items will be overwritten
+						throw new NotImplementedException();
+					}
+
 					ReadIndex = 0;
 					WriteIndex = Capacity;
 				}
@@ -172,7 +183,7 @@ namespace RingBuffer4chan
 					remainsInBuffer.CopyTo(bufferSpan);
 					items.CopyTo(bufferSpan[remainsInBuffer.Length..]);
 					ReadIndex = 0;
-					WriteIndex = remainsInBuffer.Length + itemsLength;
+					WriteIndex = remainsInBuffer.Length + newItemsLength;
 				}
 			}
 

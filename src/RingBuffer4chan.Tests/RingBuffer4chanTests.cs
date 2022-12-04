@@ -174,30 +174,66 @@ namespace RingBuffer4chan
 		}
 
 		[Fact]
-		public void CheckInMultipleWhenBufferResetTo0IsNeeded()
+		public void CheckInMultipleWhenBufferResetIsNeededAndAllItemsWillFit()
 		{
 			var initialState = new RingBuffer<int>.InternalState(
-				readIndex: 150, writeIndex: 250);
-			RingBuffer<int> _ringBuffer = new(128, initialState);
+				readIndex: 15, writeIndex: 18);
+			RingBuffer<int> _ringBuffer = new(10, initialState);
 
-			// this
-			//{RingBuffer4chan.RingBuffer<int>}
-			//    Capacity: 128
-			//    ReadIndex: 150
-			//     Size: 100
-			//     WriteIndex: 250
-			_ringBuffer.Capacity.Should().Be(128);
-			_ringBuffer.ReadIndex.Should().Be(150);
-			_ringBuffer.Size.Should().Be(100);
-			_ringBuffer.WriteIndex.Should().Be(250);
+			_ringBuffer.Capacity.Should().Be(10);
+			_ringBuffer.ReadIndex.Should().Be(15);
+			_ringBuffer.WriteIndex.Should().Be(18);
+			_ringBuffer.Size.Should().Be(3);
+
+			int[] numbersToAdd = Enumerable.Range(0, 4).ToArray();
+			_ringBuffer.CheckInMultiple(numbersToAdd);
+
+			_ringBuffer.Capacity.Should().Be(10);
+			_ringBuffer.ReadIndex.Should().Be(0);
+			_ringBuffer.WriteIndex.Should().Be(7);
+			_ringBuffer.Size.Should().Be(3 + 4);
+		}
+
+		[Fact]
+		public void CheckInMultipleWhenBufferResetIsNeededAndNoneOfOldItemsWillFit()
+		{
+			var initialState = new RingBuffer<int>.InternalState(
+				readIndex: 15, writeIndex: 18);
+			RingBuffer<int> _ringBuffer = new(10, initialState);
+
+			_ringBuffer.Capacity.Should().Be(10);
+			_ringBuffer.ReadIndex.Should().Be(15);
+			_ringBuffer.WriteIndex.Should().Be(18);
+			_ringBuffer.Size.Should().Be(3);
 
 			int[] numbersToAdd = Enumerable.Range(0, 10).ToArray();
 			_ringBuffer.CheckInMultiple(numbersToAdd);
 
-			_ringBuffer.Capacity.Should().Be(128);
+			_ringBuffer.Capacity.Should().Be(10);
 			_ringBuffer.ReadIndex.Should().Be(0);
-			_ringBuffer.Size.Should().Be(110);
-			_ringBuffer.WriteIndex.Should().Be(110);
+			_ringBuffer.WriteIndex.Should().Be(10);
+			_ringBuffer.Size.Should().Be(10);
+		}
+
+		[Fact]
+		public void CheckInMultipleWhenBufferResetIsNeededAndSomeOfOldItemsWillFit()
+		{
+			var initialState = new RingBuffer<int>.InternalState(
+				readIndex: 15, writeIndex: 18);
+			RingBuffer<int> _ringBuffer = new(10, initialState);
+
+			_ringBuffer.Capacity.Should().Be(10);
+			_ringBuffer.ReadIndex.Should().Be(15);
+			_ringBuffer.WriteIndex.Should().Be(18);
+			_ringBuffer.Size.Should().Be(3);
+
+			int[] numbersToAdd = Enumerable.Range(0, 8).ToArray();
+			_ringBuffer.CheckInMultiple(numbersToAdd);
+
+			_ringBuffer.Capacity.Should().Be(10);
+			_ringBuffer.ReadIndex.Should().Be(0);
+			_ringBuffer.WriteIndex.Should().Be(10);
+			_ringBuffer.Size.Should().Be(10);
 		}
 
 		[Fact]
