@@ -171,7 +171,10 @@ namespace RingBuffer4chan
 					else
 					{
 						// Only some of old items will be overwritten
-						throw new NotImplementedException();
+						int oldItemsRemaining = Capacity - newItemsLength;
+						var remainingSpan = bufferSpan[(ReadIndex + Size - oldItemsRemaining)..WriteIndex];
+						remainingSpan.CopyTo(bufferSpan);
+						items.CopyTo(bufferSpan[oldItemsRemaining..]);
 					}
 
 					ReadIndex = 0;
