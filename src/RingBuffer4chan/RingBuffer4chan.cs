@@ -1,4 +1,5 @@
 ﻿// #define DUMP_STATE_ON_EXCEPTION
+#define CHECKINMULTIPLE_ONE_BY_ONE
 
 using System;
 using System.Collections;
@@ -140,7 +141,7 @@ namespace RingBuffer4chan
 
 		public void CheckInMultiple(ReadOnlySpan<T> items)
 		{
-#if true
+#if !CHECKINMULTIPLE_ONE_BY_ONE
 			int itemsLength = items.Length;
 			var bufferSpan = _buffer.AsSpan();
 
