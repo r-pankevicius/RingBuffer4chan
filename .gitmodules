@@ -1,0 +1,4 @@
+[submodule "lib/stateless"]
+	path = lib/stateless
+	url = https://github.com/dotnet-state-machine/stateless.git
+	branch = dev
