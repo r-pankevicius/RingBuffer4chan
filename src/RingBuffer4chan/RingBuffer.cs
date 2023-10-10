@@ -1,4 +1,6 @@
-﻿//#define DUMP_STATE_ON_EXCEPTION
+﻿// Used under MIT License, see https://github.com/r-pankevicius/RingBuffer4chan
+
+//#define DUMP_STATE_ON_EXCEPTION
 //#define CHECKINMULTIPLE_ONE_BY_ONE
 
 using System;
